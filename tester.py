@@ -14,6 +14,8 @@ axis.controller.config.control_mode = ControlMode.TORQUE_CONTROL
 axis.controller.config.input_mode = InputMode.PASSTHROUGH
 axis.controller.input_torque = 0
 
+axis.motor.motor_thermistor.temperature
+
 print("Entering closed-loop control...")
 axis.requested_state = AxisState.CLOSED_LOOP_CONTROL
 time.sleep(0.3)
@@ -33,7 +35,9 @@ POS_RANGE = 120.0 / 360.0  # 0.333 turns
 print(f"End position will be: {pos_start + POS_RANGE:.3f} turns")
 
 # === TUNE THESE ===
-MAX_TORQUE = 1
+MAX_TORQUE = -1
+
+
 SLEW_RATE = 5.0
 
 current_torque = 0.0
@@ -67,7 +71,8 @@ try:
         
         axis.controller.input_torque = current_torque
         
-        print(f"pos={pos:.3f}  norm={normalized:.2f}  torque={current_torque:.2f}")
+        temp = axis.motor.motor_thermistor.temperature
+        print(f"pos={pos:.3f}  norm={normalized:.2f}  torque={current_torque:.2f}  temp={temp:.1f}°C")
         time.sleep(dt)
 
 except KeyboardInterrupt:
