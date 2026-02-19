@@ -2,7 +2,11 @@
 """
 Simple Encoder Position Reader
 Displays real-time encoder position from AMT212B-V-OD
-Press Ctrl+C to exit
+Press Ctrl+C to exitaimport odrive
+odrv = odrive.find_any(timeout=10)
+axis = odrv.axis0
+m = axis.motor
+print([a for a in dir(m) if not a.startswith('_')])
 """
 
 import odrive

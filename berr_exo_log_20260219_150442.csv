@@ -1,0 +1,1 @@
+time_s,pos_turns,pos_deg,normalized,velocity_turns_s,commanded_torque_Nm,desired_torque_Nm,iq_setpoint_A,iq_measured_A,motor_temp_C,fet_temp_C,vbus_V,ibus_A,power_elec_W,power_mech_W,active_errors

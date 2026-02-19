@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BERR Exo</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #4f8cff;
+    --accent-dim: #2a4a8a;
+    --danger: #ff4f4f;
+    --success: #4fff8c;
+    --warn: #ffb84f;
+    --text: #e8e8f0;
+    --text-dim: #8888a0;
+    --font: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === HEADER === */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #7c4fff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .logo h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .logo h1 span { color: var(--text-dim); font-weight: 400; }
+
+  .status-cluster {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--surface2);
+    font-size: 12px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-dot.disconnected { background: var(--danger); animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* === LAYOUT === */
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 65px);
+  }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-section {
+    margin-bottom: 16px;
+  }
+
+  .sidebar-section h3 {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    padding-left: 8px;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { background: var(--accent-dim); color: var(--accent); }
+
+  .nav-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .configure-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .configure-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* === MAIN === */
+  main {
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: 24px;
+  }
+
+  .page-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  /* === CARDS === */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* === GRID LAYOUTS === */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  /* === TELEMETRY TILES === */
+  .metric {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .metric-unit {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-left: 2px;
+  }
+
+  .metric-value.accent { color: var(--accent); }
+  .metric-value.success { color: var(--success); }
+  .metric-value.warn { color: var(--warn); }
+  .metric-value.danger { color: var(--danger); }
+
+  /* === RANGE SLIDER === */
+  .slider-group {
+    margin-bottom: 20px;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .slider-label {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .slider-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  /* === TORQUE CURVE BAR EDITOR === */
+  .curve-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .curve-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .curve-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .curve-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  .eq-editor {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 20px 16px 12px;
+    margin-bottom: 16px;
+  }
+
+  .eq-y-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 220px;
+    padding-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .eq-y-labels span {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: right;
+    width: 32px;
+  }
+
+  .eq-bars-wrap {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .eq-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 220px;
+    flex: 1;
+    position: relative;
+  }
+
+  .eq-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    position: relative;
+  }
+
+  .eq-track {
+    width: 100%;
+    flex: 1;
+    position: relative;
+    border-radius: 4px;
+    background: var(--border);
+    overflow: visible;
+  }
+
+  .eq-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 4px;
+    background: linear-gradient(to top, var(--accent-dim), var(--accent));
+    transition: height 0.08s;
+    min-height: 2px;
+  }
+
+  .eq-handle {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    width: 20px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--accent);
+    cursor: ns-resize;
+    z-index: 2;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: background 0.1s;
+  }
+
+  .eq-handle:hover, .eq-handle.dragging {
+    background: #fff;
+  }
+
+  .eq-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .eq-val {
+    font-size: 9px;
+    color: var(--accent);
+    font-weight: 600;
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .eq-col:hover .eq-val, .eq-col.active .eq-val {
+    opacity: 1;
+  }
+
+  .curve-preview {
+    background: var(--surface2);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 120px;
+    margin-bottom: 16px;
+  }
+
+  .curve-preview canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* === CONFIGURE MODAL === */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .modal p.subtitle {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .modal-section {
+    margin-bottom: 20px;
+  }
+
+  .modal-section label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .modal-section input,
+  .modal-section select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+  }
+
+  .modal-section input:focus,
+  .modal-section select:focus {
+    border-color: var(--accent);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:hover { border-color: var(--text-dim); }
+
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-danger {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .btn-danger:hover { background: var(--danger); color: var(--bg); }
+
+  /* === SESSION CONTROLS === */
+  .session-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .start-btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .start-btn.go {
+    background: var(--success);
+    color: var(--bg);
+  }
+
+  .start-btn.go:hover { opacity: 0.85; }
+
+  .start-btn.stop {
+    background: var(--danger);
+    color: white;
+  }
+
+  .start-btn.stop:hover { opacity: 0.85; }
+
+  .session-timer {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* === LOG TABLE === */
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .log-table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+  }
+
+  .log-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-table tr:last-child td { border-bottom: none; }
+
+  /* === PRESETS === */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .preset-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .preset-card:hover { border-color: var(--accent); }
+  .preset-card.active { border-color: var(--accent); background: var(--accent-dim); }
+
+  .preset-card h4 { font-size: 13px; margin-bottom: 4px; }
+  .preset-card p { font-size: 11px; color: var(--text-dim); }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* === LIVE CHART === */
+  .live-chart {
+    background: var(--surface2);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 200px;
+    position: relative;
+  }
+
+  .live-chart canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* === HINT TEXT === */
+  .hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .inline-input {
+    width: 70px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .inline-input:focus { border-color: var(--accent); outline: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">B</div>
+    <h1>BERR <span>Exo</span></h1>
+  </div>
+  <div class="status-cluster">
+    <div class="status-pill">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">ODrive Connected</span>
+    </div>
+    <div class="status-pill">
+      <span style="color:var(--text-dim)">v-bus</span>
+      <span id="vbusDisplay" style="font-weight:600">24.1V</span>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>Monitor</h3>
+      <button class="nav-btn active" onclick="showPage('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="showPage('session')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Session
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <h3>Control</h3>
+      <button class="nav-btn" onclick="showPage('torque')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Torque Curve
+      </button>
+      <button class="nav-btn" onclick="showPage('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        Settings
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <h3>Data</h3>
+      <button class="nav-btn" onclick="showPage('logs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Logs
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="configure-btn" onclick="openConfigureModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Configure Motor
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h2>Dashboard</h2>
+        <p>Real-time system telemetry</p>
+      </div>
+
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="metric">
+          <div class="metric-label">Torque</div>
+          <div class="metric-value accent" id="mTorque">0.00<span class="metric-unit">Nm</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Position</div>
+          <div class="metric-value" id="mPosition">0<span class="metric-unit">deg</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Velocity</div>
+          <div class="metric-value" id="mVelocity">0.0<span class="metric-unit">t/s</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Current (Iq)</div>
+          <div class="metric-value" id="mCurrent">0.0<span class="metric-unit">A</span></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card">
+          <div class="card-title">Torque Output <span class="badge">LIVE</span></div>
+          <div class="live-chart"><canvas id="chartTorque"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Position Tracking <span class="badge">LIVE</span></div>
+          <div class="live-chart"><canvas id="chartPosition"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="metric">
+          <div class="metric-label">Motor Temp</div>
+          <div class="metric-value success" id="mMotorTemp">32<span class="metric-unit">C</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">FET Temp</div>
+          <div class="metric-value success" id="mFetTemp">29<span class="metric-unit">C</span></div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Power</div>
+          <div class="metric-value" id="mPower">0.0<span class="metric-unit">W</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSION PAGE -->
+    <div class="page" id="page-session">
+      <div class="page-header">
+        <h2>Training Session</h2>
+        <p>Start a resistance training session</p>
+      </div>
+
+      <div class="session-bar">
+        <button class="start-btn go" id="sessionBtn" onclick="toggleSession()">Start Session</button>
+        <span class="session-timer" id="sessionTimer">00:00</span>
+        <span style="color:var(--text-dim);font-size:12px;margin-left:auto" id="repCount">0 reps</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Session Parameters</div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Max Torque</span>
+              <span class="slider-value" id="sessionTorqueVal">2.5 Nm</span>
+            </div>
+            <input type="range" min="0.5" max="5.0" step="0.1" value="2.5" id="sessionTorque" oninput="document.getElementById('sessionTorqueVal').textContent=this.value+' Nm'">
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Slew Rate</span>
+              <span class="slider-value" id="sessionSlewVal">5.0 Nm/s</span>
+            </div>
+            <input type="range" min="1" max="20" step="0.5" value="5" id="sessionSlew" oninput="document.getElementById('sessionSlewVal').textContent=this.value+' Nm/s'">
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Torque Curve</span>
+              <span class="slider-value" id="sessionCurveVal">Flat</span>
+            </div>
+            <select id="sessionCurve" style="width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:13px" onchange="document.getElementById('sessionCurveVal').textContent=this.options[this.selectedIndex].text">
+              <option value="flat">Flat (Constant Resistance)</option>
+              <option value="linear">Linear Ramp</option>
+              <option value="bell">Bell Curve</option>
+              <option value="custom">Custom (from Torque Curve editor)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Range of Motion</div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Max Rotation</span>
+              <span class="slider-value" id="romVal">120 deg</span>
+            </div>
+            <input type="range" min="30" max="180" step="5" value="120" id="romSlider" oninput="updateROM(this.value)">
+            <p class="hint">Full ROM for bicep curl: ~140 deg. Adjust based on patient range.</p>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:16px">
+            <span class="slider-label">Or enter exactly:</span>
+            <input type="number" class="inline-input" id="romInput" value="120" min="10" max="180" onchange="setROM(this.value)">
+            <span style="color:var(--text-dim);font-size:12px">degrees</span>
+          </div>
+          <div style="margin-top:20px;padding:12px;background:var(--surface2);border-radius:8px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span style="font-size:12px;color:var(--text-dim)">Start</span>
+              <span style="font-size:12px;color:var(--text-dim)">End</span>
+            </div>
+            <div style="height:8px;background:var(--border);border-radius:4px;position:relative">
+              <div id="romBar" style="height:100%;width:66.7%;background:var(--accent);border-radius:4px;transition:width 0.2s"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px">
+              <span style="font-size:12px;font-weight:600">0 deg</span>
+              <span style="font-size:12px;font-weight:600" id="romEndLabel">120 deg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TORQUE CURVE PAGE -->
+    <div class="page" id="page-torque">
+      <div class="page-header">
+        <h2>Custom Torque Curve</h2>
+        <p>Set resistance at each position through the range of motion. Drag handles up/down.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Curve Editor <span class="badge" id="curveMaxLabel">MAX 2.5 Nm</span></div>
+        <div class="curve-toolbar">
+          <button class="curve-btn active" onclick="setCurvePreset('flat',this)">Flat</button>
+          <button class="curve-btn" onclick="setCurvePreset('linear',this)">Linear Ramp</button>
+          <button class="curve-btn" onclick="setCurvePreset('bell',this)">Bell Curve</button>
+          <button class="curve-btn" onclick="setCurvePreset('eccentric',this)">Eccentric Focus</button>
+          <button class="curve-btn" onclick="setCurvePreset('zero',this)" style="margin-left:auto;color:var(--danger);border-color:var(--danger)">Clear All</button>
+        </div>
+
+        <div class="eq-bars-wrap">
+          <div class="eq-y-labels">
+            <span>100%</span>
+            <span>75%</span>
+            <span>50%</span>
+            <span>25%</span>
+            <span>0%</span>
+          </div>
+          <div class="eq-bars" id="eqBars"></div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-top:4px;padding:0 40px 0 0">
+          <span style="font-size:11px;color:var(--text-dim)">Position through ROM (degrees)</span>
+          <span style="font-size:11px;color:var(--text-dim)">Torque = bar height x Max Torque</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Curve Preview</div>
+        <div class="curve-preview"><canvas id="curvePreviewCanvas"></canvas></div>
+        <p class="hint">Smooth interpolation of the bar values above. This is the actual torque profile that would be sent to the motor.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Presets</div>
+        <div class="preset-grid">
+          <div class="preset-card active" onclick="selectPreset(this,'flat')">
+            <h4>Flat</h4>
+            <p>Constant resistance throughout ROM</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset(this,'linear')">
+            <h4>Linear Ramp</h4>
+            <p>Builds resistance toward end-range</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset(this,'bell')">
+            <h4>Bell Curve</h4>
+            <p>Peak resistance at mid-range</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset(this,'eccentric')">
+            <h4>Eccentric Focus</h4>
+            <p>Higher resistance on return phase</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset(this,'ramp-down')">
+            <h4>Ramp Down</h4>
+            <p>Resistance decreases through ROM</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset(this,'plateau')">
+            <h4>Plateau</h4>
+            <p>Ramps up, holds, ramps down</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <h2>Settings</h2>
+        <p>Session and safety parameters</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Torque Limits</div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Max Output Torque (at gearbox)</span>
+              <span class="slider-value" id="maxTorqueVal">25 Nm</span>
+            </div>
+            <input type="range" min="5" max="28" step="1" value="25" oninput="document.getElementById('maxTorqueVal').textContent=this.value+' Nm'">
+            <p class="hint">Hardware max: 28 Nm (D6374 x 10:1 gearbox). Limits torque for all sessions.</p>
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Slew Rate (torque ramp speed)</span>
+              <span class="slider-value" id="slewSettVal">5.0 Nm/s</span>
+            </div>
+            <input type="range" min="1" max="20" step="0.5" value="5" oninput="document.getElementById('slewSettVal').textContent=this.value+' Nm/s'">
+            <p class="hint">How fast torque ramps on/off. Higher = snappier, lower = smoother.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Thermal Limits</div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Motor Temp Shutdown</span>
+              <span class="slider-value" id="tempLimVal">100 C</span>
+            </div>
+            <input type="range" min="60" max="120" step="5" value="100" oninput="document.getElementById('tempLimVal').textContent=this.value+' C'">
+            <p class="hint">Session stops if motor thermistor reads above this. Default 100C, hard limit 130C.</p>
+          </div>
+          <div class="slider-group">
+            <div class="slider-header">
+              <span class="slider-label">Control Loop Rate</span>
+              <span class="slider-value" id="loopVal">50 Hz</span>
+            </div>
+            <input type="range" min="20" max="100" step="5" value="50" oninput="document.getElementById('loopVal').textContent=this.value+' Hz'">
+            <p class="hint">Rate of torque updates and CSV logging. 50 Hz = 20ms cycle (matches tester.py).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hardware Info <span class="badge">READ ONLY</span></div>
+        <div class="grid-4" style="margin-bottom:0">
+          <div class="metric">
+            <div class="metric-label">Motor</div>
+            <div style="font-size:13px;font-weight:600">D6374</div>
+            <div style="font-size:11px;color:var(--text-dim)">KT: 0.0555 Nm/A</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Gearbox</div>
+            <div style="font-size:13px;font-weight:600">10:1 Planetary</div>
+            <div style="font-size:11px;color:var(--text-dim)">28 Nm max output</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Encoder</div>
+            <div style="font-size:13px;font-weight:600">AMT212B</div>
+            <div style="font-size:11px;color:var(--text-dim)">12-bit / 4096 CPR</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Regen Clamp</div>
+            <div style="font-size:13px;font-weight:600">50W / 2 ohm</div>
+            <div style="font-size:11px;color:var(--text-dim)">~20W at 60 RPM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS PAGE -->
+    <div class="page" id="page-logs">
+      <div class="page-header">
+        <h2>Session Logs</h2>
+        <p>Review past training sessions</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent Sessions</div>
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Duration</th>
+              <th>Reps</th>
+              <th>Avg Torque</th>
+              <th>Peak Torque</th>
+              <th>File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-02-19 15:08</td>
+              <td>3m 12s</td>
+              <td>24</td>
+              <td>1.8 Nm</td>
+              <td>2.5 Nm</td>
+              <td style="color:var(--accent)">berr_exo_log_20260219_150822.csv</td>
+            </tr>
+            <tr>
+              <td>2026-02-19 15:05</td>
+              <td>2m 45s</td>
+              <td>18</td>
+              <td>1.6 Nm</td>
+              <td>2.4 Nm</td>
+              <td style="color:var(--accent)">berr_exo_log_20260219_150556.csv</td>
+            </tr>
+            <tr>
+              <td>2026-02-19 15:04</td>
+              <td>1m 30s</td>
+              <td>10</td>
+              <td>1.4 Nm</td>
+              <td>2.3 Nm</td>
+              <td style="color:var(--accent)">berr_exo_log_20260219_150442.csv</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- CONFIGURE MODAL -->
+<div class="modal-overlay" id="configureModal">
+  <div class="modal">
+    <h2>Configure Motor</h2>
+    <p class="subtitle">Run setup.py calibration sequence on the ODrive Pro</p>
+
+    <div class="modal-section">
+      <label>Calibration Current</label>
+      <input type="number" value="5.0" step="0.5" min="1" max="10">
+      <p class="hint" style="margin-top:4px">Current used during motor calibration phase. Default: 5.0 A.</p>
+    </div>
+    <div class="modal-section">
+      <label>Resistance Calib Max Voltage</label>
+      <input type="number" value="4.0" step="0.5" min="1" max="8">
+      <p class="hint" style="margin-top:4px">Max voltage for phase resistance measurement. Default: 4.0 V.</p>
+    </div>
+
+    <div style="background:var(--surface2);border-radius:8px;padding:14px;margin-top:12px">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">This will run the full setup.py sequence:</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.8">
+        1. Erase existing config<br>
+        2. Write motor + encoder config<br>
+        3. Run motor calibration (motor will beep)<br>
+        4. Run encoder offset calibration<br>
+        5. Save &amp; verify closed-loop control
+      </div>
+    </div>
+
+    <div style="background:rgba(255,184,79,0.08);border:1px solid rgba(255,184,79,0.2);border-radius:8px;padding:14px;margin-top:12px">
+      <div style="font-size:12px;color:var(--warn);font-weight:600;margin-bottom:4px">Motor must be free to spin</div>
+      <div style="font-size:12px;color:var(--text-dim)">Detach from arm before running. Encoder offset calibration requires the motor to rotate freely. Config save triggers an automatic reboot.</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeConfigureModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="runConfigure()">Run Calibration</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// === PAGE NAVIGATION ===
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'torque') drawCurvePreview();
+}
+
+// === CONFIGURE MODAL ===
+function openConfigureModal() {
+  document.getElementById('configureModal').classList.add('open');
+}
+function closeConfigureModal() {
+  document.getElementById('configureModal').classList.remove('open');
+}
+function runConfigure() {
+  alert('This will run setup.py on the connected ODrive.\n\nBackend not connected yet - this is a mock.');
+  closeConfigureModal();
+}
+
+// === ROM CONTROLS ===
+function updateROM(val) {
+  document.getElementById('romVal').textContent = val + ' deg';
+  document.getElementById('romInput').value = val;
+  document.getElementById('romEndLabel').textContent = val + ' deg';
+  document.getElementById('romBar').style.width = (val / 180 * 100) + '%';
+  buildEqBars(); // rebuild labels for new ROM
+}
+function setROM(val) {
+  val = Math.max(10, Math.min(180, parseInt(val)));
+  document.getElementById('romSlider').value = val;
+  updateROM(val);
+}
+
+// === SESSION CONTROL ===
+let sessionRunning = false;
+let sessionStart = 0;
+let sessionInterval = null;
+let mockReps = 0;
+
+function toggleSession() {
+  const btn = document.getElementById('sessionBtn');
+  if (!sessionRunning) {
+    sessionRunning = true;
+    sessionStart = Date.now();
+    mockReps = 0;
+    btn.textContent = 'Stop Session';
+    btn.className = 'start-btn stop';
+    sessionInterval = setInterval(updateSessionTimer, 1000);
+  } else {
+    sessionRunning = false;
+    btn.textContent = 'Start Session';
+    btn.className = 'start-btn go';
+    clearInterval(sessionInterval);
+  }
+}
+
+function updateSessionTimer() {
+  const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  document.getElementById('sessionTimer').textContent = m + ':' + s;
+  if (Math.random() > 0.7) mockReps++;
+  document.getElementById('repCount').textContent = mockReps + ' reps';
+}
+
+// === EQ-STYLE TORQUE CURVE EDITOR ===
+const NUM_BARS = 12;
+let barValues = new Array(NUM_BARS).fill(0.8); // 0-1 (% of max torque)
+let draggingBar = -1;
+
+function getMaxROM() {
+  const el = document.getElementById('romSlider');
+  return el ? parseInt(el.value) : 120;
+}
+
+function buildEqBars() {
+  const container = document.getElementById('eqBars');
+  container.innerHTML = '';
+  const rom = getMaxROM();
+
+  for (let i = 0; i < NUM_BARS; i++) {
+    const deg = Math.round(rom * i / (NUM_BARS - 1));
+    const pct = Math.round(barValues[i] * 100);
+
+    const col = document.createElement('div');
+    col.className = 'eq-col';
+    col.dataset.index = i;
+
+    col.innerHTML = `
+      <div class="eq-val">${pct}%</div>
+      <div class="eq-track">
+        <div class="eq-fill" style="height:${pct}%"></div>
+        <div class="eq-handle" style="bottom:${pct}%"></div>
+      </div>
+      <div class="eq-label">${deg}°</div>
+    `;
+    container.appendChild(col);
+  }
+
+  // Update max torque label
+  const maxT = document.getElementById('sessionTorque');
+  if (maxT) {
+    document.getElementById('curveMaxLabel').textContent = 'MAX ' + maxT.value + ' Nm';
+  }
+
+  drawCurvePreview();
+}
+
+function handleEqDrag(e) {
+  if (draggingBar < 0) return;
+  e.preventDefault();
+
+  const col = document.querySelectorAll('.eq-col')[draggingBar];
+  const track = col.querySelector('.eq-track');
+  const rect = track.getBoundingClientRect();
+
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  let pct = 1 - (clientY - rect.top) / rect.height;
+  pct = Math.max(0, Math.min(1, pct));
+
+  barValues[draggingBar] = pct;
+
+  const fill = col.querySelector('.eq-fill');
+  const handle = col.querySelector('.eq-handle');
+  const valLabel = col.querySelector('.eq-val');
+
+  fill.style.height = (pct * 100) + '%';
+  handle.style.bottom = (pct * 100) + '%';
+  valLabel.textContent = Math.round(pct * 100) + '%';
+
+  drawCurvePreview();
+}
+
+document.addEventListener('mousedown', (e) => {
+  const handle = e.target.closest('.eq-handle');
+  if (!handle) return;
+  const col = handle.closest('.eq-col');
+  draggingBar = parseInt(col.dataset.index);
+  col.classList.add('active');
+  handle.classList.add('dragging');
+});
+
+document.addEventListener('mousemove', handleEqDrag);
+document.addEventListener('touchmove', handleEqDrag, {passive: false});
+
+document.addEventListener('mouseup', () => {
+  if (draggingBar >= 0) {
+    const col = document.querySelectorAll('.eq-col')[draggingBar];
+    if (col) {
+      col.classList.remove('active');
+      col.querySelector('.eq-handle').classList.remove('dragging');
+    }
+  }
+  draggingBar = -1;
+});
+
+document.addEventListener('touchend', () => {
+  if (draggingBar >= 0) {
+    const col = document.querySelectorAll('.eq-col')[draggingBar];
+    if (col) {
+      col.classList.remove('active');
+      col.querySelector('.eq-handle').classList.remove('dragging');
+    }
+  }
+  draggingBar = -1;
+});
+
+// Also allow clicking directly on a track to set value
+document.addEventListener('mousedown', (e) => {
+  const track = e.target.closest('.eq-track');
+  if (!track || e.target.closest('.eq-handle')) return;
+  const col = track.closest('.eq-col');
+  const idx = parseInt(col.dataset.index);
+  const rect = track.getBoundingClientRect();
+  let pct = 1 - (e.clientY - rect.top) / rect.height;
+  pct = Math.max(0, Math.min(1, pct));
+  barValues[idx] = pct;
+
+  col.querySelector('.eq-fill').style.height = (pct * 100) + '%';
+  col.querySelector('.eq-handle').style.bottom = (pct * 100) + '%';
+  col.querySelector('.eq-val').textContent = Math.round(pct * 100) + '%';
+
+  draggingBar = idx;
+  col.classList.add('active');
+  col.querySelector('.eq-handle').classList.add('dragging');
+  drawCurvePreview();
+});
+
+// === CURVE PREVIEW (smooth interpolation) ===
+function drawCurvePreview() {
+  const canvas = document.getElementById('curvePreviewCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+
+  canvas.width = rect.width * 2;
+  canvas.height = rect.height * 2;
+  ctx.scale(2, 2);
+
+  const w = rect.width;
+  const h = rect.height;
+  const pad = 12;
+  const rom = getMaxROM();
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Interpolate barValues into smooth curve using catmull-rom
+  function getVal(t) {
+    // t is 0..1
+    const fi = t * (NUM_BARS - 1);
+    const i = Math.floor(fi);
+    const frac = fi - i;
+    if (i >= NUM_BARS - 1) return barValues[NUM_BARS - 1];
+    if (i < 0) return barValues[0];
+
+    // Simple cubic interpolation
+    const p0 = barValues[Math.max(0, i - 1)];
+    const p1 = barValues[i];
+    const p2 = barValues[Math.min(NUM_BARS - 1, i + 1)];
+    const p3 = barValues[Math.min(NUM_BARS - 1, i + 2)];
+
+    const t2 = frac * frac;
+    const t3 = t2 * frac;
+    const v = 0.5 * ((2*p1) + (-p0+p2)*frac + (2*p0-5*p1+4*p2-p3)*t2 + (-p0+3*p1-3*p2+p3)*t3);
+    return Math.max(0, Math.min(1, v));
+  }
+
+  // Draw grid
+  ctx.strokeStyle = '#1e1e2e';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad + (h - pad * 2) * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+  }
+
+  // Draw curve
+  const steps = 200;
+  ctx.strokeStyle = '#4f8cff';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps;
+    const x = pad + t * (w - pad * 2);
+    const y = h - pad - getVal(t) * (h - pad * 2);
+    if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Fill under
+  ctx.lineTo(w - pad, h - pad);
+  ctx.lineTo(pad, h - pad);
+  ctx.closePath();
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = '#4f8cff';
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Labels
+  ctx.fillStyle = '#8888a0';
+  ctx.font = '10px monospace';
+  ctx.fillText('0°', pad, h - 1);
+  ctx.fillText(rom + '°', w - pad - 20, h - 1);
+
+  // Max torque label
+  const maxT = document.getElementById('sessionTorque');
+  const maxNm = maxT ? maxT.value : '2.5';
+  ctx.fillText(maxNm + ' Nm', 2, pad + 3);
+  ctx.fillText('0 Nm', 2, h - pad);
+}
+
+// === PRESETS ===
+function setCurvePreset(name, btnEl) {
+  document.querySelectorAll('.curve-toolbar .curve-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  switch(name) {
+    case 'flat':
+      barValues = new Array(NUM_BARS).fill(0.8);
+      break;
+    case 'linear':
+      for (let i = 0; i < NUM_BARS; i++) barValues[i] = i / (NUM_BARS - 1);
+      break;
+    case 'bell':
+      for (let i = 0; i < NUM_BARS; i++) {
+        const t = i / (NUM_BARS - 1);
+        barValues[i] = Math.sin(t * Math.PI);
+      }
+      break;
+    case 'eccentric':
+      for (let i = 0; i < NUM_BARS; i++) {
+        const t = i / (NUM_BARS - 1);
+        barValues[i] = 0.3 + 0.7 * t * t;
+      }
+      break;
+    case 'ramp-down':
+      for (let i = 0; i < NUM_BARS; i++) barValues[i] = 1 - (i / (NUM_BARS - 1));
+      break;
+    case 'plateau':
+      for (let i = 0; i < NUM_BARS; i++) {
+        const t = i / (NUM_BARS - 1);
+        if (t < 0.2) barValues[i] = t / 0.2 * 0.9;
+        else if (t > 0.8) barValues[i] = (1 - t) / 0.2 * 0.9;
+        else barValues[i] = 0.9;
+      }
+      break;
+    case 'zero':
+      barValues = new Array(NUM_BARS).fill(0);
+      break;
+  }
+  buildEqBars();
+}
+
+function selectPreset(el, name) {
+  document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  setCurvePreset(name, null);
+  // Also update toolbar active state
+  document.querySelectorAll('.curve-toolbar .curve-btn').forEach(b => {
+    b.classList.remove('active');
+    if (b.textContent.trim().toLowerCase().replace(/\s+/g,'-') === name) b.classList.add('active');
+  });
+}
+
+// === MOCK LIVE DATA ===
+let torqueHistory = new Array(100).fill(0);
+let posHistory = new Array(100).fill(0);
+let mockPos = 0;
+let mockDir = 1;
+
+function updateMockData() {
+  mockPos += mockDir * (1 + Math.random() * 3);
+  if (mockPos > 120) { mockDir = -1; mockPos = 120; }
+  if (mockPos < 0) { mockDir = 1; mockPos = 0; }
+
+  const norm = mockPos / 120;
+  const torque = sessionRunning ? (norm > 0.05 && norm < 0.95 ? (2.5 * (0.8 + Math.random() * 0.4)) : 0) : 0;
+  const vel = mockDir * (0.1 + Math.random() * 0.3);
+
+  torqueHistory.push(torque);
+  torqueHistory.shift();
+  posHistory.push(mockPos);
+  posHistory.shift();
+
+  document.getElementById('mTorque').innerHTML = torque.toFixed(2) + '<span class="metric-unit">Nm</span>';
+  document.getElementById('mPosition').innerHTML = Math.round(mockPos) + '<span class="metric-unit">deg</span>';
+  document.getElementById('mVelocity').innerHTML = vel.toFixed(1) + '<span class="metric-unit">t/s</span>';
+  document.getElementById('mCurrent').innerHTML = (torque / 0.0555).toFixed(1) + '<span class="metric-unit">A</span>';
+
+  const motorTemp = 32 + (sessionRunning ? Math.random() * 5 : 0);
+  const fetTemp = 29 + (sessionRunning ? Math.random() * 3 : 0);
+  document.getElementById('mMotorTemp').innerHTML = Math.round(motorTemp) + '<span class="metric-unit">C</span>';
+  document.getElementById('mFetTemp').innerHTML = Math.round(fetTemp) + '<span class="metric-unit">C</span>';
+  document.getElementById('mPower').innerHTML = (torque * vel * 6.28).toFixed(1) + '<span class="metric-unit">W</span>';
+
+  drawLiveChart('chartTorque', torqueHistory, 5, '#4f8cff', 'Nm');
+  drawLiveChart('chartPosition', posHistory, 140, '#4fff8c', 'deg');
+}
+
+function drawLiveChart(canvasId, data, maxVal, color, unit) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+
+  if (canvas.width !== rect.width * 2 || canvas.height !== rect.height * 2) {
+    canvas.width = rect.width * 2;
+    canvas.height = rect.height * 2;
+    ctx.scale(2, 2);
+  }
+
+  const w = rect.width;
+  const h = rect.height;
+  const pad = 8;
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = pad + (w - pad * 2) * i / (data.length - 1);
+    const y = h - pad - (data[i] / maxVal) * (h - pad * 2);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  ctx.lineTo(w - pad, h - pad);
+  ctx.lineTo(pad, h - pad);
+  ctx.closePath();
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  const last = data[data.length - 1];
+  ctx.fillStyle = color;
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText(last.toFixed(1) + ' ' + unit, w - 80, 18);
+}
+
+// === INIT ===
+window.addEventListener('load', () => {
+  buildEqBars();
+  setInterval(updateMockData, 100);
+});
+
+window.addEventListener('resize', () => {
+  drawCurvePreview();
+});
+
+document.getElementById('configureModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeConfigureModal();
+});
+</script>
+
+</body>
+</html>
