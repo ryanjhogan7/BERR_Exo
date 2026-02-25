@@ -38,7 +38,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
+    padding: 10px 24px;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     flex-shrink: 0;
@@ -51,37 +51,55 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: bold; font-size: 14px;
   }
-  .status-cluster { display: flex; gap: 16px; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .status-cluster { display: flex; gap: 12px; }
   .status-pill {
     display: flex; align-items: center; gap: 8px;
-    padding: 6px 12px; border-radius: 20px;
+    padding: 5px 12px; border-radius: 20px;
     background: var(--surface2); font-size: 12px;
   }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
   .status-dot.disconnected { background: var(--danger); }
+  .status-dot.warn { background: var(--warn); }
+  .vbus-display {
+    font-size: 18px; font-weight: bold; color: var(--success);
+    padding: 4px 14px; background: var(--surface2); border-radius: 20px;
+  }
+  .session-timer {
+    font-size: 13px; color: var(--accent); font-weight: bold;
+    padding: 5px 12px; background: var(--surface2); border-radius: 20px;
+    display: none;
+  }
+  .session-timer.active { display: flex; align-items: center; gap: 6px; }
+  .timer-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
   /* === LAYOUT === */
   .dashboard {
     display: grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 360px 1fr;
     flex: 1;
     overflow: hidden;
   }
 
   .panel {
-    padding: 24px;
+    padding: 20px;
     overflow-y: auto;
   }
 
   .left-panel { border-right: 1px solid var(--border); background: var(--surface); }
-  
-  h2 { font-size: 16px; margin-bottom: 16px; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px;}
+
+  h2 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 14px; color: var(--text-dim);
+    border-bottom: 1px solid var(--border); padding-bottom: 8px;
+  }
 
   /* === CONTROLS === */
-  .control-group { margin-bottom: 24px; }
-  .control-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .control-group { margin-bottom: 20px; }
+  .control-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
   .control-val { color: var(--accent); font-weight: bold; }
-  
+
   input[type="range"] {
     width: 100%; height: 6px; border-radius: 3px;
     background: var(--border); outline: none; -webkit-appearance: none;
@@ -90,47 +108,66 @@
     -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
     background: var(--accent); cursor: pointer;
   }
+  input[type="range"]:disabled { opacity: 0.4; cursor: not-allowed; }
+  input[type="range"]:disabled::-webkit-slider-thumb { background: var(--text-dim); cursor: not-allowed; }
 
   .btn {
     width: 100%; padding: 14px; border: none; border-radius: 8px;
     font-family: var(--font); font-size: 15px; font-weight: bold;
-    cursor: pointer; transition: 0.2s;
+    cursor: pointer; transition: all 0.3s ease;
   }
-  .btn-start { background: var(--success); color: var(--bg); margin-bottom: 24px; }
-  .btn-stop { background: var(--danger); color: white; margin-bottom: 24px; }
+  .btn-start { background: var(--success); color: var(--bg); margin-bottom: 20px; }
+  .btn-start:hover { filter: brightness(1.1); }
+  .btn-stop { background: var(--danger); color: white; margin-bottom: 20px; }
+  .btn-stop:hover { filter: brightness(1.1); }
 
   /* === CURVE EDITOR === */
-  .curve-presets { display: flex; gap: 8px; margin-bottom: 16px; }
+  .curve-presets { display: flex; gap: 6px; margin-bottom: 12px; }
   .curve-presets button {
-    flex: 1; padding: 6px; background: var(--surface2); color: var(--text-dim);
-    border: 1px solid var(--border); border-radius: 4px; font-size: 11px; cursor: pointer;
+    flex: 1; padding: 5px; background: var(--surface2); color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 4px; font-size: 11px;
+    font-family: var(--font); cursor: pointer; transition: all 0.2s;
   }
   .curve-presets button:hover { border-color: var(--accent); color: var(--accent); }
 
   .eq-container {
     display: flex; justify-content: space-between; align-items: flex-end;
-    height: 150px; padding: 10px; background: var(--surface2); border-radius: 8px;
+    height: 130px; padding: 8px; background: var(--surface2); border-radius: 8px;
   }
   .eq-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
   .eq-bar-wrap span { font-size: 9px; color: var(--text-dim); }
-  
+
   /* Vertical Sliders */
   input[type="range"].vertical {
     -webkit-appearance: slider-vertical;
     width: 16px; height: 100%;
   }
 
+  /* === ERROR DISPLAY === */
+  .error-banner {
+    display: none; padding: 10px 16px; margin-bottom: 16px;
+    background: rgba(255, 79, 79, 0.1); border: 1px solid var(--danger);
+    border-radius: 8px; font-size: 12px; color: var(--danger);
+  }
+  .error-banner.visible { display: block; }
+
   /* === TELEMETRY GRID === */
-  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-  .metric-card { background: var(--surface2); padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
-  .metric-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
-  .metric-value { font-size: 24px; font-weight: bold; }
-  .metric-unit { font-size: 12px; color: var(--text-dim); font-weight: normal; margin-left: 4px; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .metric-card {
+    background: var(--surface2); padding: 14px; border-radius: 8px;
+    border: 1px solid var(--border); transition: border-color 0.3s;
+  }
+  .metric-card.active { border-color: var(--accent-dim); }
+  .metric-card.highlight { border-color: var(--accent); box-shadow: 0 0 12px rgba(79, 140, 255, 0.15); }
+  .metric-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .metric-value { font-size: 22px; font-weight: bold; }
+  .metric-unit { font-size: 11px; color: var(--text-dim); font-weight: normal; margin-left: 2px; }
+  .metric-sub { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
 
   /* === CHARTS === */
   .chart-container {
     background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px; margin-bottom: 16px; height: 220px;
+    border-radius: 8px; padding: 16px; margin-bottom: 12px; height: 200px;
   }
 </style>
 </head>
@@ -141,15 +178,22 @@
     <div class="logo-icon">B</div>
     <div style="font-weight:bold; font-size:16px;">BERR Exo</div>
   </div>
-  <div class="status-cluster">
-    <div class="status-pill">
-      <div class="status-dot disconnected" id="statusDot"></div>
-      <span id="statusText">Connecting...</span>
+  <div class="header-right">
+    <div class="session-timer" id="sessionTimer">
+      <div class="timer-dot"></div>
+      <span id="timerVal">0:00</span>
     </div>
-    <div class="status-pill">
-      <span style="color:var(--text-dim)">V-BUS</span>
-      <span id="vbusVal" style="font-weight:bold">--.-V</span>
+    <div class="status-cluster">
+      <div class="status-pill">
+        <div class="status-dot disconnected" id="statusDot"></div>
+        <span id="statusText">Connecting...</span>
+      </div>
+      <div class="status-pill" id="odriveStatePill" style="display:none">
+        <span style="color:var(--text-dim)">ODrive</span>
+        <span id="odriveStateVal" style="font-weight:bold">--</span>
+      </div>
     </div>
+    <div class="vbus-display" id="vbusDisplay">--.- V</div>
   </div>
 </header>
 
@@ -157,19 +201,21 @@
   <div class="panel left-panel">
     <button id="sessionBtn" class="btn btn-start" onclick="toggleSession()">START SESSION</button>
 
+    <div class="error-banner" id="errorBanner"></div>
+
     <h2>Session Parameters</h2>
-    
+
     <div class="control-group">
       <div class="control-header">
         <span>Max Torque</span>
-        <span class="control-val" id="valTorque">1.0 Nm</span>
+        <span class="control-val" id="valTorque">1.5 Nm</span>
       </div>
-      <input type="range" id="cfgTorque" min="0.1" max="1.8" step="0.1" value="1.0" oninput="document.getElementById('valTorque').innerText = this.value + ' Nm'">
+      <input type="range" id="cfgTorque" min="0.1" max="3.3" step="0.1" value="1.5" oninput="document.getElementById('valTorque').innerText = this.value + ' Nm'">
     </div>
 
     <div class="control-group">
       <div class="control-header">
-        <span>Range of Motion (ROM)</span>
+        <span>Range of Motion</span>
         <span class="control-val" id="valRom">120 deg</span>
       </div>
       <input type="range" id="cfgRom" min="30" max="180" step="5" value="120" oninput="document.getElementById('valRom').innerText = this.value + ' deg'">
@@ -177,29 +223,41 @@
 
     <div class="control-group">
       <div class="control-header">
-        <span>Slew Rate (Ramp Speed)</span>
+        <span>Slew Rate</span>
         <span class="control-val" id="valSlew">5.0 Nm/s</span>
       </div>
       <input type="range" id="cfgSlew" min="1" max="20" step="1" value="5" oninput="document.getElementById('valSlew').innerText = this.value + ' Nm/s'">
     </div>
 
-    <h2>Custom Torque Curve</h2>
+    <h2>Torque Curve</h2>
     <div class="curve-presets">
       <button onclick="setPreset('flat')">Flat</button>
-      <button onclick="setPreset('ramp')">Ramp Up</button>
-      <button onclick="setPreset('bell')">Bell Curve</button>
+      <button onclick="setPreset('ramp')">Ramp</button>
+      <button onclick="setPreset('bell')">Bell</button>
+      <button onclick="setPreset('eccentric')">Eccentric</button>
     </div>
-    <div class="eq-container" id="eqContainer">
-      </div>
+    <div class="eq-container" id="eqContainer"></div>
   </div>
 
   <div class="panel">
     <h2>Live Telemetry</h2>
-    
+
     <div class="metric-grid">
-      <div class="metric-card">
-        <div class="metric-label">Actual Torque</div>
+      <div class="metric-card highlight" id="cardTorqueCmd">
+        <div class="metric-label">Commanded</div>
         <div class="metric-value" style="color:var(--accent)" id="mTorque">0.00<span class="metric-unit">Nm</span></div>
+      </div>
+      <div class="metric-card highlight" id="cardTorqueEst">
+        <div class="metric-label">Torque Estimate</div>
+        <div class="metric-value" style="color:#7c4fff" id="mTorqueEst">0.00<span class="metric-unit">Nm</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Power (Elec)</div>
+        <div class="metric-value" id="mPower">0.0<span class="metric-unit">W</span></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Battery</div>
+        <div class="metric-value" id="mVbus">--.-<span class="metric-unit">V</span></div>
       </div>
       <div class="metric-card">
         <div class="metric-label">Position</div>
@@ -212,10 +270,6 @@
       <div class="metric-card">
         <div class="metric-label">Motor Temp</div>
         <div class="metric-value" id="mTemp">--<span class="metric-unit">°C</span></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label">FET Temp</div>
-        <div class="metric-value" id="mFet">--<span class="metric-unit">°C</span></div>
       </div>
       <div class="metric-card">
         <div class="metric-label">Current (Iq)</div>
@@ -236,18 +290,18 @@
   // --- 1. BUILD THE EQ CURVE ---
   const eqContainer = document.getElementById('eqContainer');
   const eqSliders = [];
-  
-  for(let i=0; i<12; i++) {
+
+  for (let i = 0; i < 12; i++) {
     const wrap = document.createElement('div');
     wrap.className = 'eq-bar-wrap';
-    
+
     const slider = document.createElement('input');
     slider.type = 'range';
     slider.className = 'vertical';
     slider.min = "0"; slider.max = "1"; slider.step = "0.05"; slider.value = "1.0";
-    
+
     const label = document.createElement('span');
-    label.innerText = i+1;
+    label.innerText = i + 1;
 
     wrap.appendChild(slider);
     wrap.appendChild(label);
@@ -259,9 +313,10 @@
     const presets = {
       'flat': [1,1,1,1,1,1,1,1,1,1,1,1],
       'ramp': [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0],
-      'bell': [0.2, 0.4, 0.7, 0.9, 1.0, 1.0, 0.9, 0.7, 0.4, 0.2, 0.1, 0.1]
+      'bell': [0.2, 0.4, 0.7, 0.9, 1.0, 1.0, 0.9, 0.7, 0.4, 0.2, 0.1, 0.1],
+      'eccentric': [0.3, 0.33, 0.38, 0.44, 0.52, 0.62, 0.73, 0.84, 0.92, 0.97, 1.0, 1.0]
     };
-    eqSliders.forEach((s, i) => s.value = presets[type][i]);
+    if (presets[type]) eqSliders.forEach((s, i) => s.value = presets[type][i]);
   }
 
   function getCurve() {
@@ -271,17 +326,7 @@
   // --- 2. LIVE CHARTS SETUP (Chart.js) ---
   Chart.defaults.color = '#8888a0';
   Chart.defaults.font.family = "'SF Mono', monospace";
-  
-  const commonOptions = {
-    responsive: true, maintainAspectRatio: false,
-    animation: false, // Turn off animations for performance
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { display: false }, 
-      y: { grid: { color: '#2a2a3a' } }
-    },
-    elements: { point: { radius: 0 }, line: { borderWidth: 2, tension: 0.1 } }
-  };
+  Chart.defaults.font.size = 11;
 
   const maxDataPoints = 100;
   const timeLabels = Array(maxDataPoints).fill('');
@@ -289,58 +334,154 @@
   const torqueCtx = document.getElementById('torqueChart').getContext('2d');
   const torqueChart = new Chart(torqueCtx, {
     type: 'line',
-    data: { labels: timeLabels, datasets: [{ data: Array(maxDataPoints).fill(0), borderColor: '#4f8cff' }] },
-    options: { ...commonOptions, plugins: { title: { display: true, text: 'Torque (Nm)', color: '#e8e8f0', align: 'start' } } }
+    data: {
+      labels: timeLabels,
+      datasets: [
+        { label: 'Commanded', data: Array(maxDataPoints).fill(0), borderColor: '#4f8cff', borderWidth: 2 },
+        { label: 'Estimate', data: Array(maxDataPoints).fill(0), borderColor: '#7c4fff', borderWidth: 2, borderDash: [4, 2] }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: {
+        legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } },
+        title: { display: true, text: 'Torque (Nm)', color: '#e8e8f0', align: 'start', font: { size: 12 } }
+      },
+      scales: {
+        x: { display: false },
+        y: { grid: { color: '#2a2a3a' }, title: { display: true, text: 'Nm', color: '#8888a0', font: { size: 10 } } }
+      },
+      elements: { point: { radius: 0 }, line: { tension: 0.2 } }
+    }
   });
 
   const posCtx = document.getElementById('posChart').getContext('2d');
   const posChart = new Chart(posCtx, {
     type: 'line',
-    data: { labels: timeLabels, datasets: [{ data: Array(maxDataPoints).fill(0), borderColor: '#4fff8c' }] },
-    options: { ...commonOptions, plugins: { title: { display: true, text: 'Position (deg)', color: '#e8e8f0', align: 'start' } } }
+    data: {
+      labels: timeLabels,
+      datasets: [{ data: Array(maxDataPoints).fill(0), borderColor: '#4fff8c', borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: 'Position (deg)', color: '#e8e8f0', align: 'start', font: { size: 12 } }
+      },
+      scales: {
+        x: { display: false },
+        y: { grid: { color: '#2a2a3a' }, title: { display: true, text: 'deg', color: '#8888a0', font: { size: 10 } } }
+      },
+      elements: { point: { radius: 0 }, line: { tension: 0.2 } }
+    }
   });
 
   // --- 3. WEBSOCKET & SESSION LOGIC ---
   let ws;
   let isRunning = false;
-  let lastChartUpdate = 0; // Throttling variable
+  let lastChartUpdate = 0;
+  let sessionStartTime = null;
+  let timerInterval = null;
+
+  function showError(msg) {
+    const banner = document.getElementById('errorBanner');
+    banner.textContent = msg;
+    banner.classList.add('visible');
+    setTimeout(() => banner.classList.remove('visible'), 8000);
+  }
+
+  function setSliderState(disabled) {
+    document.getElementById('cfgTorque').disabled = disabled;
+    document.getElementById('cfgRom').disabled = disabled;
+    document.getElementById('cfgSlew').disabled = disabled;
+    eqSliders.forEach(s => s.disabled = disabled);
+    document.querySelectorAll('.curve-presets button').forEach(b => b.disabled = disabled);
+  }
+
+  function startTimer() {
+    sessionStartTime = Date.now();
+    const el = document.getElementById('sessionTimer');
+    el.classList.add('active');
+    timerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = String(elapsed % 60).padStart(2, '0');
+      document.getElementById('timerVal').textContent = `${m}:${s}`;
+    }, 500);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('sessionTimer').classList.remove('active');
+    sessionStartTime = null;
+  }
+
+  function updateVbusColor(v) {
+    const el = document.getElementById('vbusDisplay');
+    if (v >= 34) el.style.color = 'var(--success)';
+    else if (v >= 30) el.style.color = 'var(--warn)';
+    else el.style.color = 'var(--danger)';
+  }
 
   function connect() {
     ws = new WebSocket('ws://localhost:8765');
 
     ws.onopen = () => {
       document.getElementById('statusDot').className = "status-dot";
-      document.getElementById('statusText').innerText = "ODrive Connected";
+      document.getElementById('statusText').innerText = "Connected";
+      document.getElementById('odriveStatePill').style.display = 'flex';
     };
 
     ws.onclose = () => {
       document.getElementById('statusDot').className = "status-dot disconnected";
       document.getElementById('statusText').innerText = "Disconnected";
-      setTimeout(connect, 2000); // Auto-reconnect
+      document.getElementById('odriveStatePill').style.display = 'none';
+      setTimeout(connect, 2000);
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
       if (data.type === "telemetry") {
-        // 1. Update Numbers (Runs at full 50Hz)
+        // Update metric cards
         document.getElementById('mTorque').innerHTML = `${data.torque}<span class="metric-unit">Nm</span>`;
+        document.getElementById('mTorqueEst').innerHTML = `${data.torque_estimate}<span class="metric-unit">Nm</span>`;
+        document.getElementById('mPower').innerHTML = `${data.power_elec}<span class="metric-unit">W</span>`;
+        document.getElementById('mVbus').innerHTML = `${data.vbus}<span class="metric-unit">V</span>`;
         document.getElementById('mPos').innerHTML = `${data.pos_deg}<span class="metric-unit">deg</span>`;
         document.getElementById('mVel').innerHTML = `${data.vel}<span class="metric-unit">t/s</span>`;
         document.getElementById('mCurrent').innerHTML = `${data.current}<span class="metric-unit">A</span>`;
-        document.getElementById('mTemp').innerHTML = `${data.motor_temp}<span class="metric-unit">°C</span>`;
-        document.getElementById('mFet').innerHTML = `${data.fet_temp}<span class="metric-unit">°C</span>`;
-        document.getElementById('vbusVal').innerText = `${data.vbus}V`;
+        document.getElementById('mTemp').innerHTML = `${data.motor_temp}<span class="metric-unit">&deg;C</span>`;
+
+        // Header battery voltage
+        document.getElementById('vbusDisplay').textContent = `${data.vbus} V`;
+        updateVbusColor(data.vbus);
+
+        // ODrive state - show errors if any
+        const stateEl = document.getElementById('odriveStateVal');
+        if (data.active_errors && data.active_errors !== 0) {
+          stateEl.textContent = 'ERROR';
+          stateEl.style.color = 'var(--danger)';
+        } else {
+          stateEl.textContent = 'OK';
+          stateEl.style.color = 'var(--success)';
+        }
 
         // Thermal safety colors
         document.getElementById('mTemp').style.color = data.motor_temp > 90 ? "var(--warn)" : "var(--text)";
-        if(data.motor_temp > 100) document.getElementById('mTemp').style.color = "var(--danger)";
+        if (data.motor_temp > 100) document.getElementById('mTemp').style.color = "var(--danger)";
 
-        // 2. Update Charts (Throttled to ~15Hz for browser performance)
+        // Highlight active cards during session
+        document.getElementById('cardTorqueCmd').classList.toggle('active', isRunning);
+        document.getElementById('cardTorqueEst').classList.toggle('active', isRunning);
+
+        // Charts (throttled ~15Hz)
         const now = Date.now();
         if (now - lastChartUpdate > 60) {
           torqueChart.data.datasets[0].data.shift();
           torqueChart.data.datasets[0].data.push(data.torque);
+          torqueChart.data.datasets[1].data.shift();
+          torqueChart.data.datasets[1].data.push(data.torque_estimate);
           torqueChart.update();
 
           posChart.data.datasets[0].data.shift();
@@ -352,19 +493,18 @@
       }
 
       if (data.type === "status" && data.message === "stopped") { resetUI(); }
-      if (data.type === "error") { alert("ODrive Error: " + data.message); resetUI(); }
+      if (data.type === "error") { showError("ODrive: " + data.message); resetUI(); }
     };
   }
 
   function toggleSession() {
     const btn = document.getElementById('sessionBtn');
-    
-    if (!isRunning) {
-      if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Backend not connected!"); return; }
 
-      // Gather settings and send to Python
+    if (!isRunning) {
+      if (!ws || ws.readyState !== WebSocket.OPEN) { showError("Backend not connected!"); return; }
+
       const config = {
-        max_torque: parseFloat(document.getElementById('cfgTorque').value) * -1, // Negative for resistance
+        max_torque: parseFloat(document.getElementById('cfgTorque').value) * -1,
         rom: parseFloat(document.getElementById('cfgRom').value),
         slew_rate: parseFloat(document.getElementById('cfgSlew').value),
         curve: getCurve()
@@ -373,6 +513,8 @@
       ws.send(JSON.stringify({ command: "start", config: config }));
       btn.innerText = "STOP SESSION"; btn.className = "btn btn-stop";
       isRunning = true;
+      setSliderState(true);
+      startTimer();
     } else {
       ws.send(JSON.stringify({ command: "stop" }));
       resetUI();
@@ -383,6 +525,8 @@
     const btn = document.getElementById('sessionBtn');
     btn.innerText = "START SESSION"; btn.className = "btn btn-start";
     isRunning = false;
+    setSliderState(false);
+    stopTimer();
   }
 
   // Start

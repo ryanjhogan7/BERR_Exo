@@ -42,8 +42,8 @@ def main() -> None:
     axis.config.motor.torque_constant = 8.27 / 149
     axis.config.motor.calibration_current = 5.0
     axis.config.motor.resistance_calib_max_voltage = 4.0
-    axis.config.motor.current_soft_max = 40.0
-    axis.config.motor.current_hard_max = 60.0
+    axis.config.motor.current_soft_max = 60.0
+    axis.config.motor.current_hard_max = 80.0
 
     # === THERMISTOR CONFIG ===
     axis.motor.motor_thermistor.config.enabled = True

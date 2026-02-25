@@ -77,8 +77,10 @@ def evaluate_curve(curve: List[float], normalized_pos: float) -> float:
     Uses Catmull-Rom interpolation across the bar values for a smooth profile.
     Returns 0 outside [0, 1].
     """
-    if normalized_pos <= 0.0 or normalized_pos >= 1.0:
-        return 0.0
+    if normalized_pos <= 0.0:
+        return curve[0]
+    if normalized_pos >= 1.0:
+        return curve[-1]
 
     n = len(curve)
     fi = normalized_pos * (n - 1)
@@ -359,3 +361,4 @@ def main() -> None:
 if __name__ == "__main__":
     
     main()
+    
