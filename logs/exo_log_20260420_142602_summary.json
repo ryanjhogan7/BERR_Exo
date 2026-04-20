@@ -1,0 +1,38 @@
+{
+  "session_id": "20260420_142602",
+  "timestamp": "2026-04-20T14:26:13",
+  "duration_s": 11.7,
+  "config": {
+    "max_torque_Nm": 1.5,
+    "pos_range_deg": 120.0,
+    "slew_rate_Nm_s": 5.0,
+    "curve": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "metrics": {
+    "reps": 2,
+    "total_work_J": 10.8,
+    "peak_torque_Nm": 1.5,
+    "avg_torque_Nm": 1.5,
+    "peak_rom_deg": 123.0,
+    "rom_pct_of_target": 100.0,
+    "peak_velocity_rps": 0.56,
+    "peak_power_W": 5.3,
+    "avg_power_W": 0.9,
+    "peak_motor_temp_C": 45.9,
+    "time_under_tension_s": 6.7,
+    "volume_Nm_reps": 3.0
+  }
+}
